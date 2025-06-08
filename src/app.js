@@ -63,9 +63,15 @@ app.patch('/users', async (req, res) => {
     const updateData = req.body;
 
     try {
-        const user = await User.findByIdAndUpdate({_id: userId}, updateData);
-        ReturnDocument: 'after',
-        runValidators = true;
+
+        const ALLOWED_UPDATES = ['gender', 'photoUrl', 'about', 'age'];
+
+        const isAllowedUpdate = Object.keys(updateData).every((key) => 
+            ALLOWED_UPDATES.includes(key)
+        );
+        const user = await User.findByIdAndUpdate({_id: userId}, updateData, {returnDocument: 'after',
+        runValidators: true});
+        
         res.send("User updated successfully");
     } catch (error) {
         res.status(500).send("Error updating user: " + error.message);
